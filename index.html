@@ -90,23 +90,32 @@
     }
 
     async function loadVerse() {
-      let reference = getStoredVerse();
+  let reference = getStoredVerse();
 
-      if (!reference) {
-        reference = getRandomVerse();
-        storeVerse(reference);
-      }
+  if (!reference) {
+    reference = getRandomVerse();
+    storeVerse(reference);
+  }
 
-      try {
-        const res = await fetch("https://bible-api.com/" + reference + "?translation=kjv");
-        const data = await res.json();
+  try {
+    const res = await fetch("https://bible-api.com/" + reference + "?translation=kjv");
+    const data = await res.json();
 
-        document.getElementById("verse").innerText = '"' + data.text.trim() + '"';
-        document.getElementById("reference").innerText = "— " + data.reference + " (KJV)";
-      } catch (e) {
-        document.getElementById("verse").innerText = "Failed to load verse.";
-      }
+    // ✅ SAFETY CHECK
+    if (!data || !data.text) {
+      throw new Error("Invalid API response");
     }
+
+    document.getElementById("verse").innerText = '"' + data.text.trim() + '"';
+    document.getElementById("reference").innerText = "— " + data.reference + " (KJV)";
+
+  } catch (e) {
+    console.log(e);
+
+    document.getElementById("verse").innerText = "Could not load verse.";
+    document.getElementById("reference").innerText = "";
+  }
+}
 
     loadVerse();
   </script>
