@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Verse of the day</title>
+  <title>Daily Bible Verse</title>
 
   <style>
     body {
@@ -22,44 +22,31 @@
       border-radius: 18px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.12);
       text-align: center;
-      animation: fadeIn 0.6s ease;
     }
 
     .verse {
-      font-size: 16px;
+      font-size: 20px;
       margin-bottom: 16px;
       line-height: 1.6;
     }
 
     .reference {
-      font-size: 12px;
+      font-size: 15px;
       color: #666;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Dark mode */
-    @media (prefers-color-scheme: dark) {
-      body {
-        background: #111;
-      }
-
-      .card {
-        background: #1a1a1a;
-        color: #eee;
-      }
-
-      .reference {
-        color: #aaa;
-      }
+    h2 {
+      display: none;
     }
   </style>
 </head>
 
 <body>
+  <div class="card">
+    <h2>Daily Verse</h2>
+    <div id="verse" class="verse">Loading...</div>
+    <div id="reference" class="reference"></div>
+  </div>
 
   <script>
     const verseList = [
@@ -111,11 +98,11 @@
       }
 
       try {
-        const res = await fetch(`https://bible-api.com/${reference}?translation=kjv`);
+        const res = await fetch("https://bible-api.com/" + reference + "?translation=kjv");
         const data = await res.json();
 
-        document.getElementById("verse").innerText = `"${data.text.trim()}"`;
-        document.getElementById("reference").innerText = `— ${data.reference} (KJV)`;
+        document.getElementById("verse").innerText = '"' + data.text.trim() + '"';
+        document.getElementById("reference").innerText = "— " + data.reference + " (KJV)";
       } catch (e) {
         document.getElementById("verse").innerText = "Failed to load verse.";
       }
