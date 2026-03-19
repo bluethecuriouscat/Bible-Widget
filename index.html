@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Daily Bible Verse</title>
+  <style>
+    body {
+      font-family: Georgia, serif;
+      background: #f9f9f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .card {
+      max-width: 500px;
+      padding: 24px;
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .verse {
+      font-size: 20px;
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+    .reference {
+      font-size: 15px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div id="verse" class="verse">Loading...</div>
+    <div id="reference" class="reference"></div>
+  </div>
+
+  <script>
+    const verseList = [
+      "John 3:16",
+      "Psalm 23:1",
+      "Proverbs 3:5",
+      "Romans 8:28",
+      "Philippians 4:13",
+      "Isaiah 41:10",
+      "Matthew 11:28",
+      "Joshua 1:9",
+      "2 Timothy 1:7",
+      "Hebrews 11:1"
+    ];
+
+    function getTodayKey() {
+      return new Date().toISOString().split("T")[0];
+    }
+
+    function getStoredVerse() {
+      const stored = localStorage.getItem("dailyVerse");
+      if (!stored) return null;
+
+      const parsed = JSON.parse(stored);
+      if (parsed.date === getTodayKey()) {
+        return parsed.reference;
+      }
+      return null;
+    }
+
+    function storeVerse(reference) {
+      localStorage.setItem("dailyVerse", JSON.stringify({
+        date: getTodayKey(),
+        reference: reference
+      }));
+    }
+
+    function getRandomVerse() {
+      const index = Math.floor(Math.random() * verseList.length);
+      return verseList[index];
+    }
+
+    async function loadVerse() {
+      let reference = getStoredVerse();
+
+      if (!reference) {
+        reference = getRandomVerse();
+        storeVerse(reference);
+      }
+
+      const res = await fetch(`https://bible-api.com/${reference}?translation=kjv`);
+      const data = await res.json();
+
+      document.getElementById("verse").innerText = `"${data.text.trim()}"`;
+      document.getElementById("reference").innerText = `— ${data.reference} (KJV)`;
+    }
+
+    loadVerse();
+  </script>
+</body>
+</html>
